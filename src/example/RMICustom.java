@@ -84,9 +84,11 @@ public class RMICustom implements Serializable {
 
     public void RecoveryServer() throws IOException {
         int Retry = 10;
+        Hostname = null;
+        DynamicPort = 0;
         while (DynamicPort == 0 && Hostname == null) {
             Retry = DynamicBinding(Retry);
-            if(Retry > 100)
+            if (Retry > 100)
                 return;
         }
         socket.close();
@@ -103,16 +105,15 @@ public class RMICustom implements Serializable {
             GM.MethodName = nameMethod;
             GM.obj = o;
             outStream.writeObject(GM);
-
         } catch (IOException e) {
             System.out.println("Connection has closed .... Reconnecting to Server , Token was lost!");
             RecoveryServer();
+            postMethodName(nameMethod, o);
         }
     }
 
     public Object GetMethodName() throws IOException, ClassNotFoundException {
         try {
-
             Object obj = (Object) inStream.readObject();
             outStream.flush();
             return obj;
